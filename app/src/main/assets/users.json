@@ -1,0 +1,33 @@
+{
+    "users":
+    [
+        {
+            "id":1,
+            "name":"Desi Suci Ramadhani",
+            "username":"desisuci",
+            "email":"desisuci.dsr@gmail.com"
+        },
+        
+        {
+            "id":2,
+            "name":"Rhaeza Rhaditya",
+            "username":"rhaeza08",
+            "email":"rhaezarhaditya@gmail.com"
+        },
+
+        {
+            "id":4,
+            "name":"Rifki Panca Hermansyah",
+            "username":"rifki23",
+            "email":"rifkipancaa@gmail.com"
+        },
+
+        {
+            "id":5,
+            "name":"Wahyu Tri Sangaji",
+            "username":"wahyutris",
+            "email":"wahyutris@gmail.com"
+        }
+
+    ]
+}
