@@ -15,6 +15,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -31,13 +32,15 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    String id, name, username, email, street, suite, city, zipcode,addr;
+    String id, name, username, email, street, suite, city, zipcode,addr, noHp;
     private RecyclerView recyclerView;
+    private KontakAdapter kontakAdapter;
     private UsersAdapter adapter;
     private Button btn_get;
     private HttpURLConnection connection = null;
     private BufferedReader reader = null;
     private ArrayList<Users> usersArrayList;
+    private ArrayList<Kontak> kontakArrayList;
     SwipeRefreshLayout mSwipeRefreshLayout;
     ProgressDialog progressDialog;
 
@@ -51,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
         btn_get = (Button) findViewById(R.id.btn_get);
         rq = Volley.newRequestQueue(this);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        makeJsonArrayRequest();
+        //makeJsonArrayRequest();
+        makeJsonObjectRequest();
 
         // Swipe Refresh Layout
         mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeContainer);
@@ -59,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onRefresh() {
-                makeJsonArrayRequest();
+                makeJsonObjectRequest();
             }
         });
 
@@ -67,19 +71,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-              makeJsonArrayRequest();
+                makeJsonObjectRequest();
             }
         });
 
     }
 
-    public  void makeJsonArrayRequest(){
+    public void makeJsonArrayRequest(){
         progressDialog = new ProgressDialog(MainActivity.this);
         progressDialog.setMessage("Please Wait");
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        String reqURL ="http://jsonplaceholder.typicode.com/users";
+        String reqURL ="http://210.210.154.65/MyProject/public/kontak";
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, reqURL, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -92,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                         name = userDetail.getString("name");
                         username = userDetail.getString("username");
                         email = userDetail.getString("email");
+                        noHp = userDetail.getString("noHp");
 
                         JSONObject address = userDetail.getJSONObject("address");
                         street = address.getString("street");
@@ -101,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
                         addr = street + " , " + suite + " , " + city + " , " + zipcode;
 
-                        usersArrayList.add(new Users(id, name, username, email, addr));
+                        usersArrayList.add(new Users(id, name, username, email, addr, noHp));
                     }
 
                 } catch (JSONException e) {
@@ -128,4 +133,53 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void makeJsonObjectRequest (){
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setMessage("Please Wait");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        String reqURL ="http://210.210.154.65/MyProject/public/kontak";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, reqURL, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                kontakArrayList = new ArrayList<>();
+                try {
+                    JSONArray values = response.getJSONArray("values");
+                    for (int i = 0; i < values.length(); i++) {
+                        //create a JSONObject for fetching single user data
+                        JSONObject kontak = values.getJSONObject(i);
+                        id = kontak.getString("id");
+                        name = kontak.getString("nama");
+                        email = kontak.getString("email");
+                        addr = kontak.getString("alamat");
+                        noHp = kontak.getString("nohp");
+
+                        kontakArrayList.add(new Kontak(id, name, email, addr, noHp));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                mSwipeRefreshLayout.setRefreshing(false);
+                progressDialog.dismiss();
+
+                kontakAdapter = new KontakAdapter(kontakArrayList);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(kontakAdapter);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                progressDialog.dismiss();
+                Log.i("Volley Error : ", String.valueOf(error));
+            }
+        });
+
+        rq.add(jsonObjectRequest);
+
+    }
 }
+

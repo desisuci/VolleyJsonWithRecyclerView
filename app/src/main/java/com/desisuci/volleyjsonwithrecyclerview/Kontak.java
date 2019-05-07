@@ -1,18 +1,16 @@
 package com.desisuci.volleyjsonwithrecyclerview;
 
-public class Users {
+public class Kontak {
     private String id;
     private String nama;
-    private String username;
     private String email;
     private String address;
     private String noHp;
 
 
-    public Users(String id, String nama, String username, String email, String address, String noHp) {
+    public Kontak(String id, String nama, String email, String address, String noHp) {
         this.id = id;
         this.nama = nama;
-        this.username = username;
         this.email = email;
         this.address = address;
         this.noHp = noHp;
@@ -34,10 +32,6 @@ public class Users {
     public void setNama(String nama) {
         this.nama = nama;
     }
-
-    public String getUserName(){return username;}
-
-    public void setUserName(String username){this.username = username;}
 
     public String getEmail() {
         return email;
@@ -62,5 +56,6 @@ public class Users {
     public void setNoHp (String noHp) {
         this.noHp = noHp;
     }
+
 
 }
